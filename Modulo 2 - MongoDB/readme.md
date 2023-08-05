@@ -15,9 +15,6 @@ En este base de datos puedes encontrar un montón de alojamientos y sus reviews,
 
 **Pregunta**. Si montaras un sitio real, ¿Qué posibles problemas pontenciales les ves a como está almacenada la información?
 
-```md
-Indica aquí que problemas ves
-```
 
 - El documento es excesivamente grande; esto traerá problemas. Debido a que el tamaño máximo de un documento es de 16MB, que los documentos solo se pueden cargar en su totalidad en memoria y que esta tiene un limite, es recomendable aplicar subset pattern, anidando solamente las partes que mas vamos a utilizar y sacar el resto a otras colecciones.
 
