@@ -23,7 +23,7 @@ De este modo dejamos el working set libre para los documentos que mas se vayan a
 Por ejemplo, aplicar extended ref, anidando solamente las primeras 10 reviews y guardando el resto a parte. Lo mismo con la informacion del host, anidando solamente los campos mas relevantes.
 Tambien se podrian poner a parte las amenities.
 
-- Tambien podramos anadir schema versioning a este documento si pretendemos modificarlo en el futuro. De este modo podemos intriducit cambios e ir migrando en un proceso batch los antiguos sin tener que parar la aplicación.
+- Tambien podramos anadir schema versioning a este documento si pretendemos modificarlo en el futuro. De este modo podemos introducir cambios e ir migrando en un proceso batch los antiguos sin tener que parar la aplicación.
 
 - Se podria aplicar un tree pattern en las amenities si queremos organizarlas en varios niveles, por ejemplo kitchen > microwave
 
