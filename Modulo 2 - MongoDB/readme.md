@@ -15,7 +15,6 @@ En este base de datos puedes encontrar un montón de alojamientos y sus reviews,
 
 **Pregunta**. Si montaras un sitio real, ¿Qué posibles problemas pontenciales les ves a como está almacenada la información?
 
-
 - El documento es excesivamente grande; esto traerá problemas. Debido a que el tamaño máximo de un documento es de 16MB, que los documentos solo se pueden cargar en su totalidad en memoria y que esta tiene un limite, es recomendable aplicar subset pattern, anidando solamente las partes que mas vamos a utilizar y sacar el resto a otras colecciones.
 
 De este modo dejamos el working set libre para los documentos que mas se vayan a utilizar.
@@ -29,18 +28,16 @@ Tambien se podrian poner a parte las amenities.
 
 - Podriamos aplicar el patron atributo a los campos:
 
- "accommodates": 2,
-    "bedrooms": 1,
-    "beds": 1,
-    "bathrooms": {
-      "$numberDecimal": "1.0"
-    },
+"accommodates": 2,
+"bedrooms": 1,
+"beds": 1,
+"bathrooms": {
+"$numberDecimal": "1.0"
+},
 
 agrupandolos en un único indice, ya que todos se refieren a las caracteristicas de la vivienda.
 
-
 - Podriamos aplicar polymorfic pattern a las direcciones, para tener campos que correspondan a la estructura de cada pais.
-
 
 ## Obligatorio
 
@@ -51,7 +48,7 @@ Esta es la parte mínima que tendrás que entregar para superar este laboratorio
 - Saca en una consulta cuantos alojamientos hay en España.
 
 ```js
-// Pega aquí tu consulta
+db.listingsAndReviews.countDocuments({ "address.country": { $eq: "Spain" } });
 ```
 
 - Lista los 10 primeros:
@@ -59,7 +56,17 @@ Esta es la parte mínima que tendrás que entregar para superar este laboratorio
   - Sólo muestra: nombre, precio, camas y la localidad (`address.market`).
 
 ```js
-// Pega aquí tu consulta
+// Lista los 10 primeros
+db.listingsAndReviews.find().limit(10);
+
+// Ordenados por precio de forma ascendente.
+db.listingsAndReviews.find().limit(10).sort({ price: 1 });
+
+//  Sólo muestra: nombre, precio, camas y la localidad
+db.listingsAndReviews
+  .find({}, { _id: 0, name: 1, price: 1, "address.market": 1, beds: 1 })
+  .limit(10)
+  .sort({ price: 1 });
 ```
 
 ### Filtrando
@@ -70,35 +77,98 @@ Esta es la parte mínima que tendrás que entregar para superar este laboratorio
   - Sólo muestra: nombre, precio, camas y baños.
 
 ```js
-// Pega aquí tu consulta
+db.listingsAndReviews.find(
+  { beds: { $eq: 4 }, bathrooms: { $gte: 2 } },
+  { _id: 0, name: 1, price: 1, beds: 1, bathrooms: 1 }
+);
 ```
 
 - Aunque estamos de viaje no queremos estar desconectados, así que necesitamos que el alojamiento también tenga conexión wifi. A los requisitos anteriores, hay que añadir que el alojamiento tenga wifi.
   - Sólo muestra: nombre, precio, camas, baños y servicios (`amenities`).
 
 ```js
-// Pega aquí tu consulta
+db.listingsAndReviews.find(
+  { beds: { $eq: 4 }, bathrooms: { $gte: 2 }, amenities: { $in: ["Wifi"] } },
+  { _id: 0, name: 1, price: 1, beds: 1, bathrooms: 1, amenities: 1 }
+);
 ```
 
 - Y bueno, un amigo trae a su perro, así que tenemos que buscar alojamientos que permitan mascota (_Pets allowed_).
   - Sólo muestra: nombre, precio, camas, baños y servicios (`amenities`).
 
 ```js
-// Pega aquí tu consulta
+db.listingsAndReviews.find(
+  {
+    beds: { $eq: 4 },
+    bathrooms: { $gte: 2 },
+    amenities: { $all: ["Wifi", "Pets allowed"] },
+  },
+  { _id: 0, name: 1, price: 1, beds: 1, bathrooms: 1, amenities: 1 }
+);
 ```
 
 - Estamos entre ir a Barcelona o a Portugal, los dos destinos nos valen. Pero queremos que el precio nos salga baratito (50 $), y que tenga buen rating de reviews (campo `review_scores.review_scores_rating` igual o superior a 88).
   - Sólo muestra: nombre, precio, camas, baños, rating y localidad.
 
 ```js
-// Pega aquí tu consulta
+db.listingsAndReviews.find(
+  {
+    beds: { $eq: 4 },
+    bathrooms: { $gte: 2 },
+    amenities: { $all: ["Wifi", "Pets allowed"] },
+    $or: [
+      { "address.market": { $eq: "Porto" } },
+      { "address.market": { $eq: "Barcelona" } },
+    ],
+    $and: [
+      { price: { $lte: 50 } },
+      { "review_scores.review_scores_rating": { $gte: 88 } },
+    ],
+  },
+  {
+    _id: 0,
+    name: 1,
+    price: 1,
+    beds: 1,
+    "address.market": 1,
+    bathrooms: 1,
+    "review_scores.review_scores_rating": 1,
+  }
+);
 ```
 
 - También queremos que el huésped sea un superhost (`host.host_is_superhost`) y que no tengamos que pagar depósito de seguridad (`security_deposit`).
   - Sólo muestra: nombre, precio, camas, baños, rating, si el huésped es superhost, depósito de seguridad y localidad.
 
 ```js
-// Pega aquí tu consulta
+db.listingsAndReviews.find(
+  {
+    beds: { $eq: 4 },
+    bathrooms: { $gte: 2 },
+    amenities: { $all: ["Wifi", "Pets allowed"] },
+    $or: [
+      { "address.market": { $eq: "Porto" } },
+      { "address.market": { $eq: "Barcelona" } },
+    ],
+    $and: [
+      { price: { $lte: 50 } },
+      { "review_scores.review_scores_rating": { $gte: 88 } },
+    ],
+    "host.host_is_superhost": true,
+    security_deposit: 0,
+  },
+  {
+    _id: 0,
+    name: 1,
+    price: 1,
+    beds: 1,
+    "address.market": 1,
+    bathrooms: 1,
+    "review_scores.review_scores_rating": 1,
+    "host.host_is_superhost": 1,
+    security_deposit: 1,
+  }
+);
 ```
 
 ### Agregaciones
@@ -109,13 +179,23 @@ Esta es la parte mínima que tendrás que entregar para superar este laboratorio
   - Precio
 
 ```js
-// Pega aquí tu consulta
+db.listingsAndReviews.aggregate([
+  { $match: { "address.country": "Spain" } },
+  { $project: { _id: 0, name: 1, locality: "$address.market", price: 1 } },
+]);
 ```
 
 - Queremos saber cuantos alojamientos hay disponibles por pais.
 
 ```js
-// Pega aquí tu consulta
+db.listingsAndReviews.aggregate([
+  {
+    $group: {
+      _id: "$address.country",
+      count: { $sum: 1 },
+    },
+  },
+]);
 ```
 
 ## Opcional
