@@ -203,19 +203,56 @@ db.listingsAndReviews.aggregate([
 - Queremos saber el precio medio de alquiler de airbnb en España.
 
 ```js
-// Pega aquí tu consulta
+db.listingsAndReviews.aggregate([
+  { $match: { "address.country": "Spain" } },
+  {
+    $group: {
+      _id: "$address.country",
+      averagePrice: { $avg: { $convert: { input: "$price", to: "int" } } },
+    },
+  },
+]);
 ```
 
 - ¿Y si quisieramos hacer como el anterior, pero sacarlo por paises?
 
 ```js
-// Pega aquí tu consulta
+db.listingsAndReviews.aggregate([
+  {
+    $group: {
+      _id: "$address.country",
+      averagePrice: { $avg: { $convert: { input: "$price", to: "int" } } },
+    },
+  },
+]);
 ```
 
 - Repite los mismos pasos pero agrupando también por numero de habitaciones.
 
 ```js
-// Pega aquí tu consulta
+db.listingsAndReviews.aggregate([
+  {
+    $group: {
+      _id: {
+        country: "$address.country",
+        bedrooms: "$bedrooms",
+      },
+      averagePrice: { $avg: { $convert: { input: "$price", to: "int" } } },
+    },
+  },
+  {
+    $project: {
+      _id: 1,
+      averagePrice: { $round: ["$averagePrice", 2] },
+    },
+  },
+
+  {
+    $sort: {
+      _id: 1,
+    },
+  },
+]);
 ```
 
 ## Desafio
@@ -231,5 +268,33 @@ Queremos mostrar el top 5 de alojamientos más caros en España, con los siguent
 - Servicios, pero en vez de un array, un string con todos los servicios incluidos.
 
 ```js
-// Pega aquí tu consulta
+db.listingsAndReviews.aggregate([
+  {
+    $sort: {
+      price: -1,
+    },
+  },
+  { $match: { "address.country": "Spain" } },
+  {
+    $project: {
+      _id: 0,
+      name: 1,
+      bedrooms: 1,
+      price: 1,
+      accommodates: 1,
+      bathrooms: 1,
+      city: "$address.market",
+      amenities: {
+        $reduce: {
+          input: "$amenities",
+          initialValue: "",
+          in: {
+            $concat: ["$$value", "$$this", " "],
+          },
+        },
+      },
+    },
+  },
+  { $limit: 5 },
+]);
 ```
