@@ -12,14 +12,14 @@ const data = `id,name,surname,gender,email,picture
 05298880,Marco,Campos,male,marco.campos@example.com,https://randomuser.me/api/portraits/men/67.jpg
 61539018,Marco,Calvo,male,marco.calvo@example.com,https://randomuser.me/api/portraits/men/86.jpg`;
 
-const fromCSV = (csv: string) => {
+const fromCSV = (csv: string, nAttrs?: number) => {
   const lines = csv.split("\n");
   const headers = lines[0].split(",");
   let result: any[] = [];
   for (let i = 1; i < lines.length; i++) {
     const currentLineArr = lines[i].split(",");
     let obj = {};
-    for (let j = 0; j < currentLineArr.length; j++) {
+    for (let j = 0; j < (!nAttrs ? currentLineArr.length : nAttrs); j++) {
       obj = { ...obj, [headers[j]]: currentLineArr[j] };
     }
     result = [...result, obj];
@@ -27,5 +27,7 @@ const fromCSV = (csv: string) => {
   return result;
 };
 
-const result = fromCSV(data);
-console.log(result);
+console.log(fromCSV(data)); // Cada usuario tendrá todos los atributos como la implementación original
+console.log(fromCSV(data, 2)); // cada usuario tendrá sólo `id` y `name`
+console.log(fromCSV(data, 3)); // cada usuario tendrá sólo `id`, `name` y `surname`
+console.log(fromCSV(data, 4)); // cada usuario tendrá sólo `id`, `name`, `surname` y `gender`
