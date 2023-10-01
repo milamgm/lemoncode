@@ -56,22 +56,6 @@
 					"fk": false
 				},
 				{
-					"id": "7fe81008-24ab-4ceb-bc82-14ded102aea3",
-					"name": "premium",
-					"datatype": "bool",
-					"param": "",
-					"pk": false,
-					"nn": false,
-					"list": false,
-					"comment": "",
-					"data": "",
-					"enum": "",
-					"validation": "",
-					"pattern": "",
-					"estimatedSize": "",
-					"fk": false
-				},
-				{
 					"id": "ddbc0ad7-a23c-4568-beaa-c2db777d9729",
 					"name": "visualizaciones",
 					"datatype": "int",
@@ -170,7 +154,15 @@
 			"generateCustomCode": true,
 			"customCode": "",
 			"beforeScript": "",
-			"afterScript": ""
+			"afterScript": "",
+			"collation": "",
+			"validationAction": "",
+			"validationLevel": "",
+			"size": "",
+			"max": "",
+			"capped": false,
+			"others": "",
+			"validation": ""
 		},
 		"58e5f874-633a-432d-b28d-67214dd46f79": {
 			"id": "58e5f874-633a-432d-b28d-67214dd46f79",
@@ -342,7 +334,15 @@
 			"generateCustomCode": true,
 			"customCode": "",
 			"beforeScript": "",
-			"afterScript": ""
+			"afterScript": "",
+			"collation": "",
+			"validationAction": "",
+			"validationLevel": "",
+			"size": "",
+			"max": "",
+			"capped": false,
+			"others": "",
+			"validation": ""
 		},
 		"118b9365-2f5e-47b0-ba96-f6455c4954eb": {
 			"id": "118b9365-2f5e-47b0-ba96-f6455c4954eb",
@@ -448,7 +448,15 @@
 			"generateCustomCode": true,
 			"customCode": "",
 			"beforeScript": "",
-			"afterScript": ""
+			"afterScript": "",
+			"collation": "",
+			"validationAction": "",
+			"validationLevel": "",
+			"size": "",
+			"max": "",
+			"capped": false,
+			"others": "",
+			"validation": ""
 		},
 		"b46a60fc-5536-40bf-bba1-5f487e216d3d": {
 			"id": "b46a60fc-5536-40bf-bba1-5f487e216d3d",
@@ -522,7 +530,15 @@
 			"generateCustomCode": true,
 			"customCode": "",
 			"beforeScript": "",
-			"afterScript": ""
+			"afterScript": "",
+			"collation": "",
+			"validationAction": "",
+			"validationLevel": "",
+			"size": "",
+			"max": "",
+			"capped": false,
+			"others": "",
+			"validation": ""
 		},
 		"6968345f-ed2a-4ff1-b5d5-a78aa70194db": {
 			"id": "6968345f-ed2a-4ff1-b5d5-a78aa70194db",
@@ -628,7 +644,15 @@
 			"generateCustomCode": true,
 			"customCode": "",
 			"beforeScript": "",
-			"afterScript": ""
+			"afterScript": "",
+			"collation": "",
+			"validationAction": "",
+			"validationLevel": "",
+			"size": "",
+			"max": "",
+			"capped": false,
+			"others": "",
+			"validation": ""
 		},
 		"a276a58b-ce85-4b3a-a099-c7a2f4d2bfd2": {
 			"id": "a276a58b-ce85-4b3a-a099-c7a2f4d2bfd2",
@@ -734,7 +758,15 @@
 			"generateCustomCode": true,
 			"customCode": "",
 			"beforeScript": "",
-			"afterScript": ""
+			"afterScript": "",
+			"collation": "",
+			"validationAction": "",
+			"validationLevel": "",
+			"size": "",
+			"max": "",
+			"capped": false,
+			"others": "",
+			"validation": ""
 		},
 		"7d247a52-cae2-4de0-a543-65f892398f8b": {
 			"id": "7d247a52-cae2-4de0-a543-65f892398f8b",
@@ -792,7 +824,15 @@
 			"generateCustomCode": true,
 			"customCode": "",
 			"beforeScript": "",
-			"afterScript": ""
+			"afterScript": "",
+			"collation": "",
+			"validationAction": "",
+			"validationLevel": "",
+			"size": "",
+			"max": "",
+			"capped": false,
+			"others": "",
+			"validation": ""
 		},
 		"61d67ebe-f9ae-4907-ba18-49f22c1e5480": {
 			"id": "61d67ebe-f9ae-4907-ba18-49f22c1e5480",
@@ -1198,7 +1238,8 @@
 		"def_validationLevel": "na",
 		"def_validationAction": "na",
 		"def_collation": "",
-		"def_others": ""
+		"def_others": "",
+		"lastSaved": "1.10.2023"
 	},
 	"otherObjects": {},
 	"diagrams": {
@@ -1208,7 +1249,7 @@
 			"id": "2290326c-da3b-4f7a-a305-7718f37b52b5",
 			"keysgraphics": true,
 			"linegraphics": "detailed",
-			"zoom": 0.8,
+			"zoom": 1.6,
 			"background": "transparent",
 			"lineColor": "transparent",
 			"isOpen": true,
@@ -1218,7 +1259,7 @@
 					"referencedItemId": "61d67ebe-f9ae-4907-ba18-49f22c1e5480",
 					"x": 45,
 					"y": 30,
-					"gHeight": 296,
+					"gHeight": 278,
 					"gWidth": 217,
 					"color": "#ffffff",
 					"background": "#03a9f4",
@@ -1240,8 +1281,8 @@
 				},
 				"8250e5f3-6644-4afc-beb5-a6d91a67ab75": {
 					"referencedItemId": "8250e5f3-6644-4afc-beb5-a6d91a67ab75",
-					"x": 609,
-					"y": 265,
+					"x": 1036,
+					"y": 231,
 					"gHeight": 243,
 					"gWidth": 247,
 					"color": "#ffffff",
