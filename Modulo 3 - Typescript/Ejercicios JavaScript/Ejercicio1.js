@@ -12,18 +12,14 @@ const data = `id,name,surname,gender,email,picture
 05298880,Marco,Campos,male,marco.campos@example.com,https://randomuser.me/api/portraits/men/67.jpg
 61539018,Marco,Calvo,male,marco.calvo@example.com,https://randomuser.me/api/portraits/men/86.jpg`;
 
-interface IUser {
-  [key: string]: string;
-}
-
-const fromCSV = (csv: string, nAttrs?: number) => {
+const fromCSV = (csv, nAttrs) => {
   const lines = csv.split("\n");
   const headers = lines[0].split(",");
-  let result: IUser[] = [];
+  let result = [];
 
   for (let i = 1; i < lines.length; i++) {
     const currentLineArr = lines[i].split(",");
-    let obj : IUser = {};
+    let obj = {};
     for (let j = 0; j < (!nAttrs ? currentLineArr.length : nAttrs); j++) {
       obj = { ...obj, [headers[j]]: currentLineArr[j] };
     }
