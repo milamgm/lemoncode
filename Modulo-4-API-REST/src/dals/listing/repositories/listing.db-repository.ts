@@ -1,21 +1,21 @@
 import { ObjectId } from 'mongodb';
 import { ListingRepository } from './listing.repository.js';
 import { Listing, Review } from '../listing.model.js';
-import { getListingContext } from '../listing.context.js';
+import { listingContext } from '../listing.context.js';
 
 export const dbRepository: ListingRepository = {
   getListingList: async (page?: number, pageSize?: number) => {
     const skip = Boolean(page) ? (page - 1) * pageSize : 0;
     const limit = pageSize ?? 0;
-    return await getListingContext().find().skip(skip).limit(limit).toArray();
+    return await listingContext.find().skip(skip).limit(limit).lean();
   },
   getListing: async (id: string) => {
-    return await getListingContext().findOne({
+    return await listingContext.findOne({
       _id: new ObjectId(id),
-    });
+    }).lean();
   },
   saveReview: async (id: string, review: Review) => {
-    await getListingContext().findOneAndUpdate(
+    await listingContext.findOneAndUpdate(
       {
         _id: new ObjectId(id),
       },
