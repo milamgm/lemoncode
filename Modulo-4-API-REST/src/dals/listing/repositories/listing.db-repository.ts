@@ -10,9 +10,11 @@ export const dbRepository: ListingRepository = {
     return await listingContext.find().skip(skip).limit(limit).lean();
   },
   getListing: async (id: string) => {
-    return await listingContext.findOne({
-      _id: new ObjectId(id),
-    }).lean();
+    return await listingContext
+      .findOne({
+        _id: new ObjectId(id),
+      })
+      .lean();
   },
   saveReview: async (id: string, review: Review) => {
     await listingContext.findOneAndUpdate(
@@ -27,5 +29,21 @@ export const dbRepository: ListingRepository = {
       { upsert: true, returnDocument: 'after' }
     );
     return review;
+  },
+  saveListingDetail: async (id: string, listingDetail: Partial<Listing>) => {
+    await listingContext.findOneAndUpdate(
+      {
+        _id: new ObjectId(id),
+      },
+      {
+        $set: listingDetail,
+      },
+      { upsert: true, returnDocument: 'after' }
+    )
+    const updatedListing = await listingContext.findOne({
+      _id: new ObjectId(id),
+    });
+
+    return updatedListing;
   },
 };

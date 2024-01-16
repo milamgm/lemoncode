@@ -31,4 +31,10 @@ export const mockRepository: ListingRepository = {
     );
     return review;
   },
+  saveListingDetail: async (id: string, listingDetail: Partial<Listing>) => {
+    db.listingsAndReviews = db.listingsAndReviews.map((b) =>
+      b._id.toHexString() === id ? { ...b, ...listingDetail } : b
+    );
+    return listingDetail;
+  },
 };
