@@ -38,7 +38,7 @@ listingsApi
       next(error);
     }
   })
-  .put('/:id', async (req, res, next) => {
+  .put('/add_review/:id', async (req, res, next) => {
     try {
       const { id } = req.params;
       if (await listingRepository.getListing(id)) {
