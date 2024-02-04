@@ -1,10 +1,12 @@
 import { Router } from 'express';
+import jwt from 'jsonwebtoken';
 import { listingRepository } from '#dals/index.js';
 import {
   mapListingListFromModelToApi,
   mapListingFromModelToApi,
   mapReviewFromApiToModel,
 } from './listing.mappers.js';
+import { authorizationMiddleware } from '#pods/security/security.middlewares.js';
 
 export const listingsApi = Router();
 
@@ -48,9 +50,31 @@ listingsApi
           res.sendStatus(400);
         }
       } else {
-        res.sendStatus(404);
+        res.sendStatus(400);
       }
     } catch (error) {
       next(error);
     }
-  });
+  })
+  .put(
+    '/update_listing/:id',
+    authorizationMiddleware(['admin']),
+    async (req, res, next) => {
+      try {
+        const { id } = req.params;
+        if (await listingRepository.getListing(id)) {
+          const listingDetail = req.body;
+          if (listingDetail) {
+            await listingRepository.saveListingDetail(id, listingDetail);
+            res.sendStatus(201);
+          } else {
+            res.sendStatus(400);
+          }
+        } else {
+          res.sendStatus(400);
+        }
+      } catch (error) {
+        next(error);
+      }
+    }
+  );

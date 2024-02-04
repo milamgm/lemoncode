@@ -5,6 +5,7 @@ import * as apiModel from './listing.api-model.js';
 export interface newReview extends apiModel.Review {
   listing_id: string;
 }
+export interface NewListingDetail extends Omit<apiModel.Listing, 'reviews'> {}
 
 export const mapListingFromModelToApi = (
   listing: model.Listing
