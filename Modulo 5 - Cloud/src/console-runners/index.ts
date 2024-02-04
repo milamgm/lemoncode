@@ -7,7 +7,7 @@ while (!exit) {
     name: 'consoleRunner',
     type: 'list',
     message: 'Which console-runner do you want to run?',
-    choices: ['queries', 'seed-data', 'exit'],
+    choices: ['s3', 'seed-data', 'exit'],
   });
 
   if (answer.consoleRunner !== 'exit') {

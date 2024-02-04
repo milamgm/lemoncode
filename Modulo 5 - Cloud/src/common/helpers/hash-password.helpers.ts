@@ -9,7 +9,7 @@ export const generateSalt = async (): Promise<string> => {
   return salt.toString('hex');
 };
 
-const passwordLength = 64;
+const passwordLength = 64; // 64 bytes = 512 bits
 const digestAlgorithm = 'sha512';
 const iterations = 100000;
 

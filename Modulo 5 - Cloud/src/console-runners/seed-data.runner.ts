@@ -1,30 +1,27 @@
-import inquirer from 'inquirer';
-import { runCommand } from './console-runners.helpers.js';
-
-const seedDataContainerPath = '/opt/app';
+import { generateSalt, hashPassword } from '#common/helpers/index.js';
+import {
+  connectToDBServer,
+  disconnectFromDBServer,
+} from '#core/servers/index.js';
+import { envConstants } from '#core/constants/index.js';
+import { getListingContext } from '#dals/listing/listing.context.js';
+import { getUserContext } from '#dals/user/user.context.js';
+import { db } from '#dals/airbnb.mock-data.js';
 
 export const run = async () => {
-  const { seedDataPath, containerName, dbName } = await inquirer.prompt([
-    {
-      name: 'seedDataPath',
-      type: 'input',
-      message: 'Seed data path (in your file system):',
-    },
-    {
-      name: 'containerName',
-      type: 'input',
-      message: 'Docker container name:',
-    },
-    {
-      name: 'dbName',
-      type: 'input',
-      message: 'Database name:',
-    },
-  ]);
+  await connectToDBServer(envConstants.MONGODB_URI);
 
-  const copySeedDataCommand = `docker cp "${seedDataPath}" ${containerName}:${seedDataContainerPath}`;
-  const restoreBackupCommand = `docker exec ${containerName} mongorestore --db ${dbName} ${seedDataContainerPath}`;
+  for (const user of db.users) {
+    const salt = await generateSalt();
+    const hashedPassword = await hashPassword(user.password, salt);
 
-  await runCommand(copySeedDataCommand);
-  await runCommand(restoreBackupCommand);
+    await getUserContext().insertOne({
+      ...user,
+      password: hashedPassword,
+      salt,
+    });
+  }
+
+ // await getListingContext().insertMany(db.books);
+  await disconnectFromDBServer();
 };
