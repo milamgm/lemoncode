@@ -1,4 +1,4 @@
-deploy with mongodb url: https://airbnb-manual-mongodb.onrender.com/
+autodeploy with mongodb url: https://airbnb-autodeploy.onrender.com/
 
 
 Endpoints:
