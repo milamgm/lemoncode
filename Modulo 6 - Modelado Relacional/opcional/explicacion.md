@@ -1,0 +1,3 @@
+-   **Estructura Jerárquica de Áreas:** Se añade la tabla `Áreas` y `Subareas` para representar una estructura jerárquica de tematica. Cada curso puede estar asociado a una o varias áreas de una temarica, las cuales pueden tener varias subareas.
+
+    -   **Acceso Público o Privado:** Se introduce el campo `acceso_publico` en las tablas `Cursos`, `Videos` y `Artículos` para indicar si el recurso es accesible públicamente o si no.
