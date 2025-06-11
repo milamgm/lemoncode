@@ -34,7 +34,7 @@ namespace EventRegistrationApi.Application.Queries
                   FROM
                     Participants a
                   LEFT JOIN 
-                    ParticipantEvent ab ON a.Id = ab.ParticipantsId
+                    EventParticipant  ab ON a.Id = ab.ParticipantsId
                   GROUP BY 
                     a.Id, a.Name, a.LastName, a.Email")).ToList();
         }
@@ -51,7 +51,7 @@ namespace EventRegistrationApi.Application.Queries
                   FROM
                     Participants a
                   LEFT JOIN 
-                    ParticipantEvent ab ON a.Id = ab.ParticipantsId
+                    EventParticipant  ab ON a.Id = ab.ParticipantsId
                   WHERE a.Id = @ParticipantId
                   GROUP BY 
                     a.Id, a.Name, a.LastName, a.Email", new { ParticipantId = ParticipantId });
