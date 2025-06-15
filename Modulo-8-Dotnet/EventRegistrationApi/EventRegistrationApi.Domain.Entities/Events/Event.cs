@@ -1,5 +1,5 @@
 ﻿using EventRegistrationApi.Domain.Entities.Participants;
-using EventRegistrationApi.Domain.Entities.Exceptions;
+using System.Diagnostics.CodeAnalysis;
 
 
 namespace EventRegistrationApi.Domain.Entities.Events
@@ -12,8 +12,19 @@ namespace EventRegistrationApi.Domain.Entities.Events
         public required DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public required EventDescription Description { get; set; }
-        public required ICollection<Participant> Participants { get; set; }
+        public required ICollection<Participant> Participants { get; set; } = new List<Participant>();
 
+        [SetsRequiredMembers]
+        public Event(int id, string name, DateTime startDate, DateTime? endDate, EventDescription description, ICollection<Participant> participants)
+        {
+            Id = id;
+            Name = name;
+            StartDate = startDate;
+            EndDate = endDate;
+            Description = description;
+            Participants = participants ?? new List<Participant>();
+            EnsureStateIsValid();
+        }
 
         public void UpdateName(string name)
         {
@@ -44,29 +55,16 @@ namespace EventRegistrationApi.Domain.Entities.Events
             this.Description = new EventDescription(description);
         }
 
-
-        public Event(int id, string name, DateTime startDate, DateTime endDate, EventDescription description, ICollection<Participant> participants)
+        public void AddParticipant(Participant participant)
         {
-            Id = id;
-            Name = name;
-            StartDate = startDate;
-            EndDate = endDate;
-            Description = description;
-            Participants = participants;
-            EnsureStateIsValid(); 
+            Participants.Add(participant);
         }
-
 
         protected override void EnsureStateIsValid()
         {
             if (string.IsNullOrWhiteSpace(Name))
             {
                 AddValidationError("The name is mandatory.");
-            }
-
-            if (!Participants.Any())
-            {
-                AddValidationError("The event should have at least one participant.");
             }
 
             Validate();

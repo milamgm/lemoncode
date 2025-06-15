@@ -17,13 +17,13 @@ internal static class ParticipantMapperExtensions
         };
     }
 
-    public static Participant ConvertToDomainEntity(this ParticipantDto ParticipantDto)
+    public static Participant ConvertToDomainEntity(this ParticipantDto participantDto)
     {
         return new Participant(
-            firstName: ParticipantDto.Name,
-            id: ParticipantDto.Id,
-            lastName: ParticipantDto.LastName,
-            email: ParticipantDto.Email
+            id: participantDto.Id,
+            firstName: participantDto.Name,
+            lastName: participantDto.LastName,
+            email: participantDto.Email
             );
     }
 }

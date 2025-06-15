@@ -26,6 +26,8 @@ public static class ServiceCollectionExtensions
     {
         serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
         serviceCollection.AddScoped<IParticipantRepository, ParticipantRepository>();
+        serviceCollection.AddScoped<IEventRepository, EventRepository>();
+
         return serviceCollection;
     }
 
@@ -39,7 +41,10 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddAppServices(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<appServiceAbstractions.IParticipantService, AppServices.ParticipantService>();
+        serviceCollection.AddScoped<appServiceAbstractions.IEventService, AppServices.EventService>();
+        
         serviceCollection.AddScoped<appQueryServiceAbstractions.IParticipantQueriesService, AppQueryServices.ParticipantQueriesService>();
+        serviceCollection.AddScoped<appQueryServiceAbstractions.IEventQueriesService, AppQueryServices.EventQueriesService>();
 
         return serviceCollection;
     }

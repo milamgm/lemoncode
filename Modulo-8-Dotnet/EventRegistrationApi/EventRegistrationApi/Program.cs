@@ -1,8 +1,7 @@
 using EventRegistrationApi.Api.Extensions;
 using FluentValidation;
 
-using EventRegistrationApi.Application.Dtos.Queries.Participants;
-using EventRegistrationApi.Application.Validators.Participants;
+using EventRegistrationApi.Application.Validators.Events;
 using EventRegistrationApi.DataAccess.Context;
 
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +16,7 @@ builder.Services.AddMappings()
     .AddConfigurations(builder.Configuration)
     .AddInfraServices()
     .AddAppServices()
-    .AddValidatorsFromAssemblyContaining<ParticipantValidator>()
+    .AddValidatorsFromAssemblyContaining<EventValidator>()
     .AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
