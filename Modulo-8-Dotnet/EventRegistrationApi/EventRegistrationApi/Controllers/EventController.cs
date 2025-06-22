@@ -1,148 +1,73 @@
-﻿using AutoMapper;
-
-using EventRegistrationApi.Api.Extensions;
+﻿using Microsoft.AspNetCore.Mvc;
 using EventRegistrationApi.Application.Abstractions.Services;
-using EventRegistrationApi.Application.Dtos.Commands.Events;
 using EventRegistrationApi.Application.Abstractions.Queries;
-using EventRegistrationApi.Application.Dtos.Commands.Participants;
 
-
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using CommandEventDto = EventRegistrationApi.Application.Dtos.Commands.Events.EventDto;
+using QueryEventDto = EventRegistrationApi.Application.Dtos.Queries.Events.EventDto;
+using EventRegistrationApi.Api.Extensions;
 
 namespace EventRegistrationApi.Api.Controllers;
 
-[Route("api/[controller]")]
 [ApiController]
-public class EventsController : ControllerBase
+[Route("api/eventos")]
+public class EventosController : ControllerBase
 {
     private readonly IEventService _eventService;
     private readonly IEventQueriesService _eventQueriesService;
-    private readonly IMapper _mapper;
 
-    public EventsController(IEventService eventService, IEventQueriesService eventQueriesService, IMapper mapper)
+    public EventosController(IEventService eventService, IEventQueriesService eventQueriesService)
     {
-        _eventService = eventService ?? throw new ArgumentNullException(nameof(eventService));
-        _eventQueriesService = eventQueriesService ?? throw new ArgumentNullException(nameof(eventQueriesService));
-        _mapper = mapper;
+        _eventService = eventService;
+        _eventQueriesService = eventQueriesService;
     }
 
-    [HttpGet("{eventId}")]
-    public async Task<IActionResult> GetEvent([FromRoute] int eventId)
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
     {
-        try
-        {
-            var eventDto = await _eventQueriesService.GetEvent(eventId);
-            return Ok(_mapper.Map<EventDto>(eventDto));
-        }
-        catch (Exception ex)
-        {
-            return this.Problem(ex);
-        }
+        IList<QueryEventDto> eventos = await _eventQueriesService.GetAllEvents();
+        return Ok(eventos);
     }
 
-    [HttpGet("upcoming")]
-    public async Task<IActionResult> GetUpcomingEvents([FromQuery] int limit = 10)
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
     {
-        try
-        {
-            var events = await _eventQueriesService.GetUpcomingEvents(limit);
-            return Ok(_mapper.Map<IList<EventDto>>(events));
-        }
-        catch (Exception ex)
-        {
-            return this.Problem(ex);
-        }
+        QueryEventDto evento = await _eventQueriesService.GetEvent(id);
+        if (evento == null) return NotFound();
+        return Ok(evento);
     }
 
-    [HttpPost("")]
-    public async Task<IActionResult> AddEvent([FromBody] EventDto eventDto)
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CommandEventDto evento)
     {
-        var result = await _eventService.AddEvent(eventDto);
+        evento.Operation = CommandEventDto.OperationType.Add;
+        var result = await _eventService.AddEvent(evento);
         if (!result.ValidationResult.IsValid)
         {
             result.ValidationResult.AddToModelState(this.ModelState);
             return this.ValidationProblem();
         }
 
-        return Created($"/api/events/{result.EventId}", eventDto);
+        return CreatedAtAction(nameof(GetById), new { id = result.EventId }, evento);
     }
 
-    [HttpPut("{eventId}")]
-    public async Task<IActionResult> EditEvent([FromRoute] int eventId, [FromBody] EventDto eventDto)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, [FromBody] CommandEventDto evento)
     {
-        try
+        evento.Operation = CommandEventDto.OperationType.Edit;
+        var result = await _eventService.EditEvent(id, evento);
+        if (!result.IsValid)
         {
-            var result = await _eventService.EditEvent(eventId, eventDto);
-            if (!result.IsValid)
-            {
-                result.AddToModelState(this.ModelState);
-                return this.ValidationProblem();
-            }
-
-            return Ok(eventDto);
-        }
-        catch (Exception ex)
-        {
-            return this.Problem(ex);
-        }
-    }
-
-    
-    [HttpDelete("{eventId}")]
-    public async Task<IActionResult> DeleteEvent([FromRoute] int eventId)
-    {
-        try
-        {
-            await _eventService.DeleteEvent(eventId);
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            return this.Problem(ex);
-        }
-    }
-
-    [HttpGet("{eventId}/participants")]
-    public async Task<IActionResult> GetParticipants([FromRoute] int eventId)
-    {
-        try
-        {
-            var participants = await _eventQueriesService.GetParticipants(eventId);
-            return Ok(participants);
-        }
-        catch (Exception ex)
-        {
-            return this.Problem(ex);
-        }
-    }
-
-    
-    [HttpPost("{eventId}/participants")]
-    public async Task<IActionResult> AddParticipantToEvent([FromRoute] int eventId, [FromBody] ParticipantDto participant)
-    {
-        var result = await _eventService.AddParticipantToEvent(eventId, participant);
-        if (!result.ValidationResult.IsValid)
-        {
-            result.ValidationResult.AddToModelState(this.ModelState);
+            result.AddToModelState(this.ModelState);
             return this.ValidationProblem();
         }
 
-        return Created($"/api/events/{eventId}/participants/{result.ParticipantId}", participant);
+        return Ok();
     }
 
-    
-    [HttpDelete("{eventId}/participants/{participantId}")]
-    public async Task<IActionResult> RemoveParticipantFromEvent([FromRoute] int eventId, [FromRoute] int participantId)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
     {
-        try
-        {
-            await _eventService.RemoveParticipantFromEvent(eventId, participantId);
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            return this.Problem(ex);
-        }
+        await _eventService.DeleteEvent(id);
+        return NoContent();
     }
 }

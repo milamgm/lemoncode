@@ -67,7 +67,7 @@ public class ParticipantsController : ControllerBase
         return Created($"/api/events/{Participant.Id}", Participant);
     }
 
-    [HttpPut]
+    [HttpPut("{ParticipantId}")]
     public async Task<IActionResult> EditParticipant(CommandDtos.ParticipantDto Participant)
     {
         try

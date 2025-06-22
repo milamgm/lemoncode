@@ -30,21 +30,17 @@ namespace EventRegistrationApi.Application.Queries
                 new { eventId });
 
             if (ev == null)
-            {
                 throw new EntityNotFoundException($"Event with ID {eventId} not found.");
-            }
 
             return ev;
         }
 
-        public async Task<IList<EventDto>> GetUpcomingEvents(int limit)
+        public async Task<IList<EventDto>> GetAllEvents()
         {
             var events = await _connection.QueryAsync<EventDto>(
-                @"SELECT TOP(@limit) Id, Name, StartDate, EndDate, Description
+                @"SELECT Id, Name, StartDate, EndDate, Description
                   FROM Events
-                  WHERE StartDate >= GETDATE()
-                  ORDER BY StartDate ASC",
-                new { limit });
+                  ORDER BY StartDate DESC");
 
             return events.AsList();
         }
