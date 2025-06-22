@@ -70,4 +70,41 @@ public class EventosController : ControllerBase
         await _eventService.DeleteEvent(id);
         return NoContent();
     }
+
+    // GET /api/eventos/{id}/participantes
+    [HttpGet("{id}/participantes")]
+    public async Task<IActionResult> GetEventParticipants(int id)
+    {
+        var participantes = await _eventQueriesService.GetParticipants(id);
+        return Ok(participantes);
+    }
+
+    // POST /api/eventos/{id}/participantes
+    [HttpPost("{id}/participantes")]
+    public async Task<IActionResult> AddParticipantToEvent(int id, [FromBody] int participantId)
+    {
+        var result = await _eventService.AddParticipantToEvent(id, participantId);
+        if (!result.IsValid)
+        {
+            result.AddToModelState(this.ModelState);
+            return this.ValidationProblem();
+        }
+
+        return NoContent();
+    }
+
+    // DELETE /api/eventos/{id}/participantes/{participantId}
+    [HttpDelete("{id}/participantes/{participantId}")]
+    public async Task<IActionResult> RemoveParticipantFromEvent(int id, int participantId)
+    {
+        var result = await _eventService.RemoveParticipantFromEvent(id, participantId);
+        if (!result.IsValid)
+        {
+            result.AddToModelState(this.ModelState);
+            return this.ValidationProblem();
+        }
+
+        return NoContent();
+    }
+
 }

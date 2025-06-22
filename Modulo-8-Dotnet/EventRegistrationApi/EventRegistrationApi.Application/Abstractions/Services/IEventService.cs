@@ -15,5 +15,7 @@ public interface IEventService
 
     Task<(ValidationResult ValidationResult, int? ParticipantId)> AddParticipantToEvent(int eventId, ParticipantDto participantDto);
 
-    Task RemoveParticipantFromEvent(int eventId, int participantId);
+    Task<ValidationResult> AddParticipantToEvent(int eventId, int participantId);
+    Task<ValidationResult> RemoveParticipantFromEvent(int eventId, int participantId);
+
 }
