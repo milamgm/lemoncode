@@ -14,8 +14,6 @@ public class EventDto
 
     public DateTime EndDate { get; set; }
 
-    public DateTime Created { get; set; }
-
     public required List<ParticipantDto> Participants { get; set; }
 
     public int ParticipantCount => Participants?.Count ?? 0;
