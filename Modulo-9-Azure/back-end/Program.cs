@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.HttpLogging;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//string user = Environment.GetEnvironmentVariable("SQL_SERVER_USERNAME");
+//string password = Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD");
+
 // Add services to the container.
 builder.Services.AddScoped<IHeroRepository, HeroRepository>();
 builder.Services.AddControllers(); builder.Services.AddDbContext<HeroContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

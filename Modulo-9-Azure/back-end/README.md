@@ -5,7 +5,7 @@ Este proyecto es una implementación de una API en .NET para el fronted del [tut
 ```
 docker run \
 -e 'ACCEPT_EULA=Y' \
--e 'SA_PASSWORD=Password1!' \
+-e 'SA_PASSWORD=Lem0nCode!' \
 -e 'MSSQL_PID=Express' \
 --name sqlserver \
 -p 1433:1433 -d mcr.microsoft.com/mssql/server:latest
@@ -15,7 +15,7 @@ docker run \
 --name azuresqledge \
 --network sqlserver-vnet \
 --cap-add SYS_PTRACE -e 'ACCEPT_EULA=1' \
--e 'MSSQL_SA_PASSWORD=Password1!' \
+-e 'MSSQL_SA_PASSWORD=Lem0nCode!' \
 -p 1433:1433 \
 -d mcr.microsoft.com/azure-sql-edge
 ```
@@ -27,7 +27,7 @@ Si no hay otro archivo, la configuración de la base de datos la coge del llamad
 ```
 {
     "ConnectionStrings": {
-        "DefaultConnection": "Server=localhost,1433;Initial Catalog=heroes;Persist Security Info=False;User ID=sa;Password=Password1!;Encrypt=False"
+        "DefaultConnection": "Server=localhost,1433;Initial Catalog=heroes;Persist Security Info=False;User ID=sa;Password=Lem0nCode!;Encrypt=False"
     },
     "Logging": {
         "LogLevel": {
