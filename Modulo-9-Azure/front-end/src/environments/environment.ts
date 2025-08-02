@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   containerName: "alteregos",
-  apiUrl: "http://localhost:5000/api/hero",
+  apiUrl: "https://tour-of-heroes-2.azurewebsites.net/api/hero",
   storageUrl: "http://localhost:10000/devstoreaccount1"
 };
 

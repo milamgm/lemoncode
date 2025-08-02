@@ -19,7 +19,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.0" />
 
     <!-- Azure -->
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.21.1" />    
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.25.0" />    
 
 </ItemGroup>
 

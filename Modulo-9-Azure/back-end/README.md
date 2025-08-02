@@ -5,7 +5,7 @@ Este proyecto es una implementación de una API en .NET para el fronted del [tut
 ```
 docker run \
 -e 'ACCEPT_EULA=Y' \
--e 'SA_PASSWORD=Lem0nCode!' \
+-e 'SA_PASSWORD=Password1!' \
 -e 'MSSQL_PID=Express' \
 --name sqlserver \
 -p 1433:1433 -d mcr.microsoft.com/mssql/server:latest
@@ -15,7 +15,7 @@ docker run \
 --name azuresqledge \
 --network sqlserver-vnet \
 --cap-add SYS_PTRACE -e 'ACCEPT_EULA=1' \
--e 'MSSQL_SA_PASSWORD=Lem0nCode!' \
+-e 'MSSQL_SA_PASSWORD=Password1!' \
 -p 1433:1433 \
 -d mcr.microsoft.com/azure-sql-edge
 ```
@@ -27,7 +27,7 @@ Si no hay otro archivo, la configuración de la base de datos la coge del llamad
 ```
 {
     "ConnectionStrings": {
-        "DefaultConnection": "Server=localhost,1433;Initial Catalog=heroes;Persist Security Info=False;User ID=sa;Password=Lem0nCode!;Encrypt=False"
+        "DefaultConnection": "Server=localhost,1433;Initial Catalog=heroes;Persist Security Info=False;User ID=sa;Password=Password1!;"
     },
     "Logging": {
         "LogLevel": {
@@ -38,78 +38,6 @@ Si no hay otro archivo, la configuración de la base de datos la coge del llamad
     },
     "AllowedHosts": "*"
 }
-```
-
-En esta versión podemos recuperar las imágenes de los alter egos, gracias al siguiente método:
-
-```
-        // GET: api/hero/alteregopic/5
-        [HttpGet("alteregopic/{id}")]
-        public async Task<ActionResult<Hero>> GetAlterEgoPic(int id)
-        {
-            var hero = _heroRepository.GetById(id);
-
-            if (hero == null)
-            {
-                return NotFound();
-            }
-
-            //Get image from Azure Storage
-            string connectionString = Environment.GetEnvironmentVariable("AZURE_STORAGE_CONNECTION_STRING");
-            
-            // Create a BlobServiceClient object which will be used to create a container client
-            var blobServiceClient = new BlobServiceClient(connectionString);
-
-            //Get container client
-            var containerClient = blobServiceClient.GetBlobContainerClient("alteregos");
-
-            //Get blob client
-            var blob = containerClient.GetBlobClient($"{hero.AlterEgo.ToLower().Replace(' ', '-')}.png");
-
-            //Get image from blob
-            var image = await blob.DownloadStreamingAsync();
-
-            //return image
-            return File(image.Value.Content, "image/png");
-        }
-```
-
-También permite recuperar el SAS para hacer subidas a Azure Storage desde el lado del cliente:
-
-```
-      // GET: api/hero/alteregopic/sas
-        [HttpGet("alteregopic/sas/{imgName}")]
-        public ActionResult GetAlterEgoPicSas(string imgName)
-        {
-            //Get image from Azure Storage
-            string connectionString = Environment.GetEnvironmentVariable("AZURE_STORAGE_CONNECTION_STRING");
-            
-            // Create a BlobServiceClient object which will be used to create a container client
-            var blobServiceClient = new BlobServiceClient(connectionString);
-
-            //Get container client
-            var containerClient = blobServiceClient.GetBlobContainerClient("alteregos");
-
-            //Get blob client
-            var blobClient = containerClient.GetBlobClient(imgName);
-
-            var sasBuilder = new BlobSasBuilder()
-            {
-                BlobContainerName = "alteregos",
-                BlobName = imgName,
-                Resource = "b"
-            };
-
-            sasBuilder.ExpiresOn = DateTimeOffset.UtcNow.AddMinutes(3);
-            sasBuilder.SetPermissions(BlobSasPermissions.Read | BlobSasPermissions.Write);
-
-            Uri sasUri = blobClient.GenerateSasUri(sasBuilder);
-
-            Console.WriteLine($"SAS Uri for blob is: {sasUri}");
-
-            //return image
-            return Ok($"{blobServiceClient.Uri}{sasUri.Query.ToString()}");
-        }
 ```
 
 ## Cómo lo ejecuto
