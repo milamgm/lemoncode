@@ -1,18 +1,23 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using tour_of_heroes_api.Models;
+using System.Linq;
 using Azure.Storage.Blobs;
-using Azure.Storage.Queues;
-using Azure.Storage.Sas;
-using System.Text.Json;
+
 
 namespace tour_of_heroes_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class HeroController(IHeroRepository heroRepository,IConfiguration configuration) : ControllerBase
+    public class HeroController : ControllerBase
     {
-        private readonly IHeroRepository _heroRepository = heroRepository;
-        private readonly IConfiguration _configuration = configuration;
+
+        private IHeroRepository _heroRepository;
+        public HeroController(IHeroRepository heroRepository)
+        {
+            _heroRepository = heroRepository;
+        }
 
         // GET: api/Hero
         [HttpGet]
@@ -38,75 +43,25 @@ namespace tour_of_heroes_api.Controllers
 
         // PUT: api/Hero/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        // [HttpPut("{id}")]
-        // public ActionResult PutHero(int id, Hero hero)
-        // {
-
-        //     var heroToUpdate = _heroRepository.GetById(id);
-
-        //     if (heroToUpdate == null)
-        //     {
-        //         return NotFound();
-        //     }
-
-        //     heroToUpdate.Name = hero.Name;
-        //     heroToUpdate.AlterEgo = hero.AlterEgo;
-        //     heroToUpdate.Description = hero.Description;
-
-        //     _heroRepository.Update(heroToUpdate);
-
-        //     return NoContent();
-
-        // }
-              // PUT: api/Hero/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutHero(int id, Hero hero)
+        public ActionResult PutHero(int id, Hero hero)
         {
-            if (id != hero.Id)
+
+            var heroToUpdate = _heroRepository.GetById(id);
+
+            if (heroToUpdate == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            var oldAlterEgo = _heroRepository.GetById(id).AlterEgo;
+            heroToUpdate.Name = hero.Name;
+            heroToUpdate.AlterEgo = hero.AlterEgo;
+            heroToUpdate.Description = hero.Description;
 
-            try
-            {
-                _heroRepository.Update(hero);
-
-                /*********** Background processs (We have to rename the image) *************/
-                if (hero.AlterEgo != oldAlterEgo)
-                {
-                    // Get the connection string from app settings
-                    string connectionString = _configuration.GetConnectionString("AzureStorage");
-
-                    // Instantiate a QueueClient which will be used to create and manipulate the queue
-                    var queueClient = new QueueClient(connectionString, "alteregos");
-
-                    // Create a queue
-                    await queueClient.CreateIfNotExistsAsync();
-
-                    // Create a dynamic object to hold the message
-                    var message = new
-                    {
-                        oldName = oldAlterEgo,
-                        newName = hero.AlterEgo
-                    };
-
-                    // Send the message
-                    await queueClient.SendMessageAsync(JsonSerializer.Serialize(message).ToString());
-
-                }
-                /*********** End Background processs *************/
-            }
-            catch (Exception ex)
-            {
-
-                return NotFound(ex.Message);              
-                
-            }
+            _heroRepository.Update(heroToUpdate);
 
             return NoContent();
+
         }
 
         // POST: api/Hero
@@ -142,8 +97,8 @@ namespace tour_of_heroes_api.Controllers
             }
 
             //Get image from Azure Storage
-            string connectionString = _configuration.GetConnectionString("AzureStorage");
-            
+            string connectionString = Environment.GetEnvironmentVariable("AZURE_STORAGE_CONNECTION_STRING");
+
             // Create a BlobServiceClient object which will be used to create a container client
             var blobServiceClient = new BlobServiceClient(connectionString);
 
@@ -159,39 +114,5 @@ namespace tour_of_heroes_api.Controllers
             //return image
             return File(image.Value.Content, "image/png");
         }
-
-        // GET: api/hero/alteregopic/sas
-        [HttpGet("alteregopic/sas/{imgName}")]
-        public ActionResult GetAlterEgoPicSas(string imgName)
-        {
-            //Get image from Azure Storage
-            string connectionString = _configuration.GetConnectionString("AzureStorage");
-
-            // Create a BlobServiceClient object which will be used to create a container client
-            var blobServiceClient = new BlobServiceClient(connectionString);
-
-            //Get container client
-            var containerClient = blobServiceClient.GetBlobContainerClient("alteregos");
-
-            //Get blob client
-            var blobClient = containerClient.GetBlobClient(imgName);
-
-            var sasBuilder = new BlobSasBuilder
-            {
-                BlobContainerName = "alteregos",
-                BlobName = imgName,
-                Resource = "b",
-                ExpiresOn = DateTimeOffset.UtcNow.AddMinutes(3)
-            };
-
-            sasBuilder.SetPermissions(BlobSasPermissions.Read | BlobSasPermissions.Write);
-
-            Uri sasUri = blobClient.GenerateSasUri(sasBuilder);
-
-            Console.WriteLine($"SAS Uri for blob is: {sasUri}");
-
-            //return image
-            return Ok($"{blobServiceClient.Uri}{sasUri.Query}");
-        }    
     }
 }

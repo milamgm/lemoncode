@@ -12,11 +12,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class HeroService {
-  // private heroesUrl = 'api/heroes';
-  // private heroesUrl = 'https://localhost:5001/api/hero';
-  // private heroesUrl = 'https://tour-of-heroes-webapi.azurewebsites.net/api/hero'; //URL to the web api
-  // private heroesUrl = 'https://tour-of-heroes-webapi-azure-storage.azurewebsites.net/api/hero';
-
+  
   private heroesUrl = environment.apiUrl;
 
   httpOptions = {
@@ -32,26 +28,12 @@ export class HeroService {
     this.messageService.add(`HeroService: ${message}`);
   }
 
-  getSasToken(imageName: string): Observable<any> {
-    const headers = new HttpHeaders().set('Content-Type', 'text/plain; charset=utf-8');
-
-    return this.http.get(`${this.heroesUrl}/alteregopic/sas/${imageName}`,
-      { headers: headers, responseType: 'text' })
-      .pipe(
-        tap(_ => this.log('get sas token to upload image')),
-        catchError(this.handleError<Hero[]>('getSasToken', [])));;
-  }
-
   getAlterEgoPic(id: number): Observable<Blob> {
     return this.http.get(`${this.heroesUrl}/alteregopic/${id}`, { responseType: 'blob' });
   }
 
   getHeroes(): Observable<Hero[]> {
-    // const heroes = of(HEROES);
-    // this.messageService.add('HeroService: fetched heroes')
-    // return heroes;
-
-    return this.http.get<Hero[]>(this.heroesUrl).pipe(
+      return this.http.get<Hero[]>(this.heroesUrl).pipe(
       tap((_) => this.log('fetched heroes')),
       catchError(this.handleError<Hero[]>('getHeroes', [])),
     );
@@ -59,11 +41,7 @@ export class HeroService {
 
   /** GET hero by id. Will 404 if id not found */
   getHero(id: number): Observable<Hero> {
-    // const hero = HEROES.find(h => h.id === id)!;
-    // this.messageService.add(`HeroService: fetched hero id=${id}`);
-    // return of(hero);
-
-    const url = `${this.heroesUrl}/${id}`;
+      const url = `${this.heroesUrl}/${id}`;
     return this.http.get<Hero>(url).pipe(
       tap((_) => this.log(`fetched hero id=${id}`)),
       catchError(this.handleError<Hero>(`getHero id=${id}`)),
